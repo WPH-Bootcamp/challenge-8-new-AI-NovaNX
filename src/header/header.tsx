@@ -45,8 +45,14 @@ export default function Header({ title = "Movie" }: HeaderProps) {
     navigate("/favorites");
   };
 
+  const goSearch = () => {
+    setIsMobileMenuOpen(false);
+    navigate("/search");
+  };
+
   const isHomeActive = location.pathname === "/";
   const isFavoritesActive = location.pathname === "/favorites";
+  const isSearchActive = location.pathname === "/search";
 
   return (
     <>
@@ -83,6 +89,13 @@ export default function Header({ title = "Movie" }: HeaderProps) {
               className={isFavoritesActive ? "text-white" : "text-white/70"}
             >
               Favorites
+            </button>
+            <button
+              type="button"
+              onClick={goSearch}
+              className={isSearchActive ? "text-white" : "text-white/70"}
+            >
+              Search
             </button>
           </nav>
 
@@ -137,6 +150,16 @@ export default function Header({ title = "Movie" }: HeaderProps) {
                 className="w-full rounded-xl bg-white/10 px-10 py-2.5 text-sm text-white placeholder:text-white/40 outline-none ring-1 ring-white/10 focus:ring-2 focus:ring-white/20"
                 placeholder="Search Movie"
                 type="search"
+                readOnly
+                aria-label="Go to search"
+                onClick={goSearch}
+                onFocus={goSearch}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    goSearch();
+                  }
+                }}
               />
             </label>
           </div>

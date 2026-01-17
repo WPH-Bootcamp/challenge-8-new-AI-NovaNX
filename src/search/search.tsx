@@ -1,4 +1,4 @@
-import { useDeferredValue, useEffect, useRef, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -8,12 +8,14 @@ import searchMovieMobile from "../assets/SearchMovieMobile.svg";
 import heartEmpty from "../assets/HeartMobile.svg";
 import heartFilled from "../assets/HeartFilledMobile.svg";
 
+import { api } from "../lib/api";
 import { getTmdbImageUrl, type TmdbSearchResponse } from "./search";
 import {
   addFavorite,
   isFavorite,
   removeFavorite,
 } from "../favorites/favorites";
+import type { TmdbVideosResponse } from "../detail/detail";
 
 export default function SearchPage() {
   const navigate = useNavigate();
@@ -36,7 +38,6 @@ export default function SearchPage() {
     queryKey: ["tmdb", "search", "movie", deferredQuery],
     enabled: deferredQuery.trim().length > 0,
     queryFn: async () => {
-      const { api } = await import("../lib/api");
       const response = await api.get<TmdbSearchResponse>("/search/movie", {
         params: {
           query: deferredQuery,
@@ -53,6 +54,36 @@ export default function SearchPage() {
   const firstMovieWithImage = data?.results?.find(
     (m) => !!(m.poster_path || m.backdrop_path)
   );
+
+  const firstMovieId = firstMovieWithImage?.id;
+
+  const { data: videos } = useQuery({
+    queryKey: ["tmdb", "movie", "videos", firstMovieId],
+    enabled: Number.isFinite(firstMovieId) && (firstMovieId ?? 0) > 0,
+    queryFn: async () => {
+      const response = await api.get<TmdbVideosResponse>(
+        `/movie/${firstMovieId}/videos`,
+        {
+          params: { language: "en-US" },
+        }
+      );
+      return response.data;
+    },
+    staleTime: 10 * 60 * 1000,
+  });
+
+  const trailer = useMemo(() => {
+    const items = videos?.results ?? [];
+    return (
+      items.find((v) => v.site === "YouTube" && v.type === "Trailer") ||
+      items.find((v) => v.site === "YouTube") ||
+      null
+    );
+  }, [videos]);
+
+  const trailerHref = trailer?.key
+    ? `https://www.youtube.com/watch?v=${trailer.key}`
+    : null;
 
   useEffect(() => {
     if (!firstMovieWithImage) {
@@ -78,7 +109,7 @@ export default function SearchPage() {
       overview: firstMovieWithImage.overview ?? "",
       poster_path: firstMovieWithImage.poster_path,
       vote_average: firstMovieWithImage.vote_average ?? 0,
-      trailer_key: null,
+      trailer_key: trailer?.key ?? null,
     });
 
     setFavorited(true);
@@ -178,7 +209,13 @@ export default function SearchPage() {
               <div className="mt-4 flex items-center gap-3">
                 <a
                   className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-red-600 px-6 text-sm font-semibold text-white"
-                  href="#"
+                  href={trailerHref ?? undefined}
+                  target={trailerHref ? "_blank" : undefined}
+                  rel={trailerHref ? "noreferrer" : undefined}
+                  aria-disabled={!trailerHref}
+                  onClick={(e) => {
+                    if (!trailerHref) e.preventDefault();
+                  }}
                 >
                   Watch Trailer
                   <span className="grid size-6 place-items-center rounded-full bg-white/20">
