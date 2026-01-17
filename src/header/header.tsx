@@ -4,12 +4,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 import logoSmall from "../assets/headerMobile.svg";
 import searchMobile from "../assets/SearchMobile.svg";
 import menuMobile from "../assets/MenuMobile.svg";
+import closeSearchDesktop from "../assets/CloseSearchDesktop.svg";
 
 export default function Header({ title = "Movie" }: HeaderProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [desktopQuery, setDesktopQuery] = useState("");
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 0);
@@ -45,14 +47,24 @@ export default function Header({ title = "Movie" }: HeaderProps) {
     navigate("/favorites");
   };
 
-  const goSearch = () => {
-    setIsMobileMenuOpen(false);
-    navigate("/search");
-  };
-
   const isHomeActive = location.pathname === "/";
   const isFavoritesActive = location.pathname === "/favorites";
-  const isSearchActive = location.pathname === "/search";
+
+  useEffect(() => {
+    if (location.pathname !== "/search") return;
+    const q = new URLSearchParams(location.search).get("q") ?? "";
+    setDesktopQuery(q);
+  }, [location.pathname, location.search]);
+
+  const submitDesktopSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = desktopQuery.trim();
+    if (!q) {
+      navigate("/search");
+      return;
+    }
+    navigate(`/search?q=${encodeURIComponent(q)}`);
+  };
 
   return (
     <>
@@ -90,13 +102,6 @@ export default function Header({ title = "Movie" }: HeaderProps) {
             >
               Favorites
             </button>
-            <button
-              type="button"
-              onClick={goSearch}
-              className={isSearchActive ? "text-white" : "text-white/70"}
-            >
-              Search
-            </button>
           </nav>
 
           <div className="flex items-center gap-3 md:hidden">
@@ -128,7 +133,11 @@ export default function Header({ title = "Movie" }: HeaderProps) {
             </button>
           </div>
 
-          <div className="hidden w-[240px] md:block">
+          <form
+            className="hidden w-[240px] md:block"
+            role="search"
+            onSubmit={submitDesktopSearch}
+          >
             <label className="relative block">
               <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-white/50">
                 <svg
@@ -147,22 +156,32 @@ export default function Header({ title = "Movie" }: HeaderProps) {
                 </svg>
               </span>
               <input
-                className="w-full rounded-xl bg-white/10 px-10 py-2.5 text-sm text-white placeholder:text-white/40 outline-none ring-1 ring-white/10 focus:ring-2 focus:ring-white/20"
+                className="search-clear-input w-full rounded-xl bg-white/10 px-10 py-2.5 pr-10 text-sm text-white placeholder:text-white/40 outline-none ring-1 ring-white/10 focus:ring-2 focus:ring-white/20"
                 placeholder="Search Movie"
                 type="search"
-                readOnly
-                aria-label="Go to search"
-                onClick={goSearch}
-                onFocus={goSearch}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    goSearch();
-                  }
-                }}
+                aria-label="Search movie"
+                value={desktopQuery}
+                onChange={(e) => setDesktopQuery(e.target.value)}
               />
+
+              {desktopQuery.length > 0 ? (
+                <button
+                  type="button"
+                  aria-label="Clear search"
+                  className="absolute inset-y-0 right-2 grid w-9 place-items-center rounded-lg text-white/60 hover:text-white"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => setDesktopQuery("")}
+                >
+                  <img
+                    src={closeSearchDesktop}
+                    alt=""
+                    aria-hidden="true"
+                    className="block size-5"
+                  />
+                </button>
+              ) : null}
             </label>
-          </div>
+          </form>
         </div>
       </header>
 
