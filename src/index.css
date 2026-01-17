@@ -36,6 +36,13 @@ body {
   font-family: var(--font-family-display);
 }
 
+/* Use a custom clear button for search inputs where we render one. */
+input.search-clear-input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
+}
+
 .app-header {
   z-index: 9999 !important;
   background-color: transparent !important;

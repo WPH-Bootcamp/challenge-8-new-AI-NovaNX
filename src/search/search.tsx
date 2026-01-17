@@ -165,8 +165,39 @@ export default function SearchPage() {
               placeholder="Search Movie"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="relative z-0 h-11 max-h-11 w-full rounded-xl border border-(--Neutral-800) bg-white/10 backdrop-blur-2xl pl-10 pr-4 text-sm font-normal leading-5 tracking-normal text-white placeholder:font-normal placeholder:text-white/40 outline-none [font-family:var(--font-family-body)]"
+              className="search-clear-input relative z-0 h-11 max-h-11 w-full rounded-xl border border-(--Neutral-800) bg-white/10 backdrop-blur-2xl pl-10 pr-10 text-sm font-normal leading-5 tracking-normal text-white placeholder:font-normal placeholder:text-white/40 outline-none [font-family:var(--font-family-body)]"
             />
+
+            {query.length > 0 ? (
+              <button
+                type="button"
+                aria-label="Clear search"
+                className="absolute inset-y-0 right-2 z-20 grid w-9 place-items-center rounded-lg text-white/70 hover:text-white"
+                onMouseDown={(e) => {
+                  // Prevent input from losing focus (helps keep the mobile keyboard open).
+                  e.preventDefault();
+                }}
+                onClick={() => {
+                  setQuery("");
+                  window.requestAnimationFrame(() => inputRef.current?.focus());
+                }}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  className="size-5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 6l12 12M18 6 6 18"
+                  />
+                </svg>
+              </button>
+            ) : null}
           </label>
         </div>
       </header>
