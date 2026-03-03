@@ -1,43 +1,42 @@
-import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
-import './App.css';
-function App() {
-  const [count, setCount] = useState(0);
+import Header from "./header/header.tsx";
+import Hero from "./hero/hero.tsx";
+import NewRelease from "./newRelease/newRelease.tsx";
+import TrendingNow from "./TrendingNow/TrendingNow.tsx";
+import Footer from "./footer/footer.tsx";
+import SearchPage from "./search/search.tsx";
+import MovieDetailPage from "./detail/detail.tsx";
+import FavoritesPage from "./favorites/favorites.tsx";
 
+import { Route, Routes } from "react-router-dom";
+
+function App() {
   return (
-    <>
-      <div>
-        <a
-          href='https://vite.dev'
-          target='_blank'
-        >
-          <img
-            src={viteLogo}
-            className='logo'
-            alt='Vite logo'
-          />
-        </a>
-        <a
-          href='https://react.dev'
-          target='_blank'
-        >
-          <img
-            src={reactLogo}
-            className='logo react'
-            alt='React logo'
-          />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className='card'>
-        <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className='read-the-docs'>Click on the Vite and React logos to learn more</p>
-    </>
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <div className="min-h-screen bg-linear-to-b from-slate-950 via-slate-950 to-black text-white">
+            <Header />
+            <Hero />
+
+            <div className="mx-auto mt-10 w-full max-w-6xl px-4 sm:px-6">
+              <TrendingNow />
+            </div>
+
+            <div className="mx-auto mt-7 w-full max-w-6xl px-4 sm:px-6">
+              <NewRelease />
+            </div>
+
+            <div className="mt-[45px]">
+              <Footer />
+            </div>
+          </div>
+        }
+      />
+      <Route path="/search" element={<SearchPage />} />
+      <Route path="/favorites" element={<FavoritesPage />} />
+      <Route path="/movie/:movieId" element={<MovieDetailPage />} />
+    </Routes>
   );
 }
 

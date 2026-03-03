@@ -1,0 +1,15 @@
+<svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="240" height="240" rx="24" fill="none"/>
+  <!-- Clapperboard body -->
+  <g opacity="0.95">
+    <path d="M72 114c0-8.8 7.2-16 16-16h88c8.8 0 16 7.2 16 16v62c0 8.8-7.2 16-16 16H88c-8.8 0-16-7.2-16-16v-62Z" fill="#2B2F36"/>
+    <path d="M84 128h96" stroke="#8B8F97" stroke-width="3" stroke-linecap="round"/>
+    <path d="M84 144h76" stroke="#8B8F97" stroke-width="3" stroke-linecap="round"/>
+    <path d="M84 160h64" stroke="#8B8F97" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  <!-- Clapper top -->
+  <g>
+    <path d="M82 80c2.5-6.6 9.8-10 16.4-7.5l86.2 33c6.6 2.5 10 9.8 7.5 16.4l-4.2 11L77.8 91.1 82 80Z" fill="#3A3F48"/>
+    <path d="M89.8 79.5 175 112.1" stroke="#D5D7DA" stroke-width="10" stroke-linecap="round" stroke-dasharray="18 18"/>
+  </g>
+</svg>
